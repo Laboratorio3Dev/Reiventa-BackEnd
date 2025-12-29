@@ -17,8 +17,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reinventa.Utilitarios", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolaHuellaCarbonoPJ", "ConsolaHuellaCarbonoPJ\ConsolaHuellaCarbonoPJ.csproj", "{2CE61623-F820-41E6-A470-4ACEE6948949}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolaOpenIA", "ConsolaOpenIA\ConsolaOpenIA.csproj", "{6525B741-040D-4285-91E6-0A8175A7C95A}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,10 +51,6 @@ Global
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6525B741-040D-4285-91E6-0A8175A7C95A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6525B741-040D-4285-91E6-0A8175A7C95A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6525B741-040D-4285-91E6-0A8175A7C95A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6525B741-040D-4285-91E6-0A8175A7C95A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
