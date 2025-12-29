@@ -1,0 +1,101 @@
+﻿@page "/"
+@layout EmptyLayout
+
+@using Blazored.LocalStorage
+@using Microsoft.AspNetCore.Components.Forms
+@using ReinventaLab.App.Helper.Entidades
+@using ReinventaLab.App.Layout
+@using ReinventaLab.App.Helper.Repositorios
+@inject LoginService AuthService
+@inject NavigationManager navigationManager
+@inject ILocalStorageService sessionStorage
+
+<PageTitle>ReinventaLab Login</PageTitle>
+
+<section class="vh-100 d-flex align-items-center justify-content-center bg-light">
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 col-xl-5">
+                <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card-body p-5">
+                        <div class="text-center mb-4">
+                            <img src="../images/draw2.svg" alt="ReinventaLab" width="150" class="mb-3" />
+
+                            <h3 class="fw-bold">Bienvenido a ReinventaLab</h3>
+                        </div>
+
+                        <EditForm Model="@loginModel" OnValidSubmit="LoginUsuario" FormName="LoginForm">
+                            <DataAnnotationsValidator />
+                            <ValidationSummary />
+
+                            <div class="form-group mb-3">
+                                <label for="Usuario" class="form-label">Usuario</label>
+                                <InputText @bind-Value="loginModel.Usuario" id="Usuario" class="form-control form-control-lg" />
+                                <ValidationMessage For="@(() => loginModel.Usuario)" />
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label for="Password" class="form-label">Contraseña</label>
+                                <InputText @bind-Value="loginModel.Password" id="Password" type="password" class="form-control form-control-lg" />
+                                <ValidationMessage For="@(() => loginModel.Password)" />
+                            </div>
+
+                            <button class="btn btn-primary btn-lg w-100" type="submit" disabled="@isLoading">
+                                @(isLoading ? "Iniciando sesión..." : "Iniciar Sesión")
+                            </button>
+
+                            @if (!string.IsNullOrWhiteSpace(ErrorMessage))
+                            {
+                                <div class="alert alert-danger mt-3" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                    @ErrorMessage
+                                </div>
+                            }
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+@code {
+
+    [SupplyParameterFromForm]
+    private LoginRequest loginModel { get; set; } = new LoginRequest();
+
+    private bool isLoading = false;
+    private string? ErrorMessage;
+    string? UserName = string.Empty;
+    string? NomUser = string.Empty;
+    string? RolUser = string.Empty;
+    string? Token = string.Empty;
+
+    
+
+    private async Task LoginUsuario()
+    {
+        isLoading = true;
+        ErrorMessage = null;
+
+        var result = await AuthService.LoginAsync(loginModel.Usuario, loginModel.Password);
+
+        isLoading = false;
+
+        if (result.IsSuccess)
+        {
+            await sessionStorage.SetItemAsync("MyUserName", result.UsuarioWindows.ToUpper());
+            await sessionStorage.SetItemAsync("MyName", result.NombreCompleto);
+            await sessionStorage.SetItemAsync("MyUserRol", result.Rol);
+            await sessionStorage.SetItemAsync("MyToken", result.Token);
+            navigationManager.NavigateTo("/Encuestas");
+        }
+        else
+        {
+            ErrorMessage = result.ErrorMessage;
+        }
+
+    }
+
+}

@@ -1,0 +1,248 @@
+﻿@page "/encuestas"
+@layout MainLayout
+@using BlazorBootstrap
+
+<h3 class="mb-4">Encuestas</h3>
+
+<div class="mb-3 d-flex flex-wrap gap-3">
+    <InputText @bind-Value="searchTerm" Placeholder="Buscar por nombre..." class="form-control" style="max-width: 300px;" />
+
+   @*  <Select TValue="string" @bind-Value="selectedTipoPersona" Placeholder="Filtrar por tipo de persona" class="form-select" style="max-width: 200px;">
+        <SelectItem Value="">Todos</SelectItem>
+        @foreach (var tipo in TiposPersona)
+        {
+            <SelectItem Value="@tipo">@tipo</SelectItem>
+        }
+    </Select> *@
+</div>
+
+<Grid TItem="Encuesta_" 
+      DataProvider="EncuestasDataProvider"
+      Class="table table-hover table-bordered table-striped"
+      Responsive="true"
+      ShowPager="true"
+      PageSize="5">
+
+    <GridColumns>
+        <GridColumn TItem="Encuesta_" HeaderText="Id" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @context.IdEncuesta
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Nombre" Sortable="true">
+            @context.NombreEncuesta
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Tipo de Persona" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @context.TipoPersona
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Link">
+            <a href="@context.Link" target="_blank" rel="noopener noreferrer">Link</a>
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Fecha Inicio" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @context.FechaInicio?.ToString("yyyy-MM-dd")
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Fecha Fin" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @context.FechaFin?.ToString("yyyy-MM-dd")
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Login Requerido" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @(context.FlagLogin == 1 ? "Sí" : "No")
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Usuario Creación" Sortable="true">
+            @context.UsuarioCreacion
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Fecha Creación" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @context.FechaCreacion?.ToString("yyyy-MM-dd HH:mm")
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Base" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @(context.FlagBase == 1 ? "Sí" : "No")
+        </GridColumn>
+        <GridColumn TItem="Encuesta_" HeaderText="Análisis" HeaderTextAlignment="Alignment.Center" Sortable="true">
+            @(context.FlagAnalisis == 1 ? "Sí" : "No")
+        </GridColumn>
+
+        <GridColumn TItem="Encuesta_" HeaderText="Acciones" HeaderTextAlignment="Alignment.Center" Width="100px">
+            <Button Color="ButtonColor.Primary" Size="ButtonSize.Small" Clicked="@(() => OpenEditModal(context))">
+                <Icon Name="IconName.Pencil" /> Editar
+            </Button>
+        </GridColumn>
+    </GridColumns>
+</Grid>
+
+<Modal @ref="modal" title="Modal title">
+    <BodyTemplate>
+        <p style="margin-bottom: 100vh;">This is some placeholder content to show the scrolling behavior for modals. Instead of repeating the text the modal, we use an inline style set a minimum height, thereby extending the length of the overall modal and demonstrating the overflow scrolling. When content becomes longer than the height of the viewport, scrolling will move the modal as needed.</p>
+        <p>This content should appear at the bottom after you scroll.</p>
+    </BodyTemplate>
+    <FooterTemplate>
+        <Button Color="ButtonColor.Secondary" @onclick="OnHideModalClick">Close</Button>
+        <Button Color="ButtonColor.Primary">Save changes</Button>
+    </FooterTemplate>
+</Modal>
+
+<Modal @bind-Visible="showEditModal" Size="ModalSize.Small" Backdrop="Backdrop.Static" Scrollable="true">
+   
+     <HeaderTemplate>
+        Editar Encuesta - @editEncuesta?.NombreEncuesta
+    </HeaderTemplate>
+    <BodyTemplate>
+        @if (editEncuesta != null)
+        {
+            <EditForm Model="editEncuesta" OnValidSubmit="SaveEdit">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="mb-3">
+                    <label class="form-label">Nombre Encuesta</label>
+                    <InputText class="form-control" @bind-Value="editEncuesta.NombreEncuesta" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Persona</label>
+                    <InputText class="form-control" @bind-Value="editEncuesta.TipoPersona" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Link</label>
+                    <InputText class="form-control" @bind-Value="editEncuesta.Link" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha Inicio</label>
+                    <InputDate class="form-control" @bind-Value="editEncuesta.FechaInicio" />
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Fecha Fin</label>
+                    <InputDate class="form-control" @bind-Value="editEncuesta.FechaFin" />
+                </div>
+
+                <div class="form-check mb-3">
+                    <InputCheckbox class="form-check-input" @bind-Value="flagLoginBool" />
+                    <label class="form-check-label">Login Requerido</label>
+                </div>
+
+                <Button Color="ButtonColor.Primary" Type="ButtonType.Submit">Guardar</Button>
+                <Button Color="ButtonColor.Secondary" Class="ms-2" Clicked="CloseEditModal">Cancelar</Button>
+            </EditForm>
+        }
+        else
+        {
+            <p>Cargando...</p>
+        }
+    </BodyTemplate>
+</Modal>
+
+@code {
+    private string searchTerm = "";
+    private string selectedTipoPersona = "";
+
+    private List<Encuesta_>? Encuestas;
+
+    private bool showEditModal = false;
+    private Encuesta_? editEncuesta;
+
+    private bool flagLoginBool
+    {
+        get => editEncuesta?.FlagLogin == 1;
+        set
+        {
+            if (editEncuesta != null)
+                editEncuesta.FlagLogin = value ? 1 : 0;
+        }
+    }
+
+    private List<string> TiposPersona => Encuestas?.Select(e => e.TipoPersona ?? "").Distinct().Where(s => !string.IsNullOrEmpty(s)).ToList() ?? new();
+
+    protected override void OnInitialized()
+    {
+        Encuestas = GetEncuestas();
+    }
+
+    private Task<GridDataProviderResult<Encuesta_>> EncuestasDataProvider(GridDataProviderRequest<Encuesta_> request)
+    {
+        IEnumerable<Encuesta_> data = Encuestas ?? Enumerable.Empty<Encuesta_>();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            data = data.Where(e => e.NombreEncuesta?.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ?? false);
+        }
+
+        if (!string.IsNullOrEmpty(selectedTipoPersona))
+        {
+            data = data.Where(e => e.TipoPersona == selectedTipoPersona);
+        }
+
+        var result = request.ApplyTo(data);
+
+        return Task.FromResult(result);
+    }
+
+    private void OpenEditModal(Encuesta_ encuesta)
+    {
+        // Clonar para editar sin afectar la lista hasta guardar
+        editEncuesta = new Encuesta_()
+        {
+            IdEncuesta = encuesta.IdEncuesta,
+            NombreEncuesta = encuesta.NombreEncuesta,
+            TipoPersona = encuesta.TipoPersona,
+            Link = encuesta.Link,
+            FechaInicio = encuesta.FechaInicio,
+            FechaFin = encuesta.FechaFin,
+            FlagLogin = encuesta.FlagLogin,
+            UsuarioCreacion = encuesta.UsuarioCreacion,
+            FechaCreacion = encuesta.FechaCreacion,
+            FlagBase = encuesta.FlagBase,
+            FlagAnalisis = encuesta.FlagAnalisis
+        };
+        showEditModal = true;
+    }
+
+    private void CloseEditModal()
+    {
+        showEditModal = false;
+        editEncuesta = null;
+    }
+
+    private void SaveEdit()
+    {
+        if (editEncuesta == null) return;
+
+        // Guardar cambios en la lista original
+        var encuestaOriginal = Encuestas?.FirstOrDefault(e => e.IdEncuesta == editEncuesta.IdEncuesta);
+        if (encuestaOriginal != null)
+        {
+            encuestaOriginal.NombreEncuesta = editEncuesta.NombreEncuesta;
+            encuestaOriginal.TipoPersona = editEncuesta.TipoPersona;
+            encuestaOriginal.Link = editEncuesta.Link;
+            encuestaOriginal.FechaInicio = editEncuesta.FechaInicio;
+            encuestaOriginal.FechaFin = editEncuesta.FechaFin;
+            encuestaOriginal.FlagLogin = editEncuesta.FlagLogin;
+            // No modificamos usuario creación ni fecha creación aquí
+            encuestaOriginal.FlagBase = editEncuesta.FlagBase;
+            encuestaOriginal.FlagAnalisis = editEncuesta.FlagAnalisis;
+        }
+
+        showEditModal = false;
+        editEncuesta = null;
+    }
+
+    private List<Encuesta_> GetEncuestas() => new()
+    {
+        new() { IdEncuesta = 1, NombreEncuesta = "Satisfacción Cliente", TipoPersona = "Cliente", Link = "http://...", FechaInicio = DateTime.Parse("2025-01-01"), FechaFin = DateTime.Parse("2025-01-31"), FlagLogin = 1, UsuarioCreacion = "admin", FechaCreacion = DateTime.Now.AddDays(-30), FlagBase = 0, FlagAnalisis = 1 },
+        new() { IdEncuesta = 2, NombreEncuesta = "Evaluación Empleado", TipoPersona = "Empleado", Link = "http://...", FechaInicio = DateTime.Parse("2025-02-01"), FechaFin = DateTime.Parse("2025-02-28"), FlagLogin = 0, UsuarioCreacion = "hr", FechaCreacion = DateTime.Now.AddDays(-20), FlagBase = 1, FlagAnalisis = 0 },
+        new() { IdEncuesta = 3, NombreEncuesta = "Encuesta Producto", TipoPersona = "Cliente", Link = "http://...", FechaInicio = DateTime.Parse("2025-03-01"), FechaFin = DateTime.Parse("2025-03-31"), FlagLogin = 1, UsuarioCreacion = "admin", FechaCreacion = DateTime.Now.AddDays(-10), FlagBase = 1, FlagAnalisis = 1 },
+    };
+
+    public class Encuesta_
+    {
+        public int IdEncuesta { get; set; }
+        public string? NombreEncuesta { get; set; }
+        public string? TipoPersona { get; set; }
+        public string? Link { get; set; }
+        public DateTime? FechaInicio { get; set; }
+        public DateTime? FechaFin { get; set; }
+        public int FlagLogin { get; set; }
+        public string? UsuarioCreacion { get; set; }
+        public DateTime? FechaCreacion { get; set; }
+        public int FlagBase { get; set; }
+        public int FlagAnalisis { get; set; }
+    }
+}
