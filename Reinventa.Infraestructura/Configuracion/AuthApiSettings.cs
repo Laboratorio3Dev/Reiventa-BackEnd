@@ -9,5 +9,8 @@ namespace Reinventa.Infraestructura.Configuracion
     public class AuthApiSettings
     {
         public string TokenUrl { get; set; }
+        public string ClientId { get; set; }
+        public string ClientSecret { get; set; }
+        
     }
 }
