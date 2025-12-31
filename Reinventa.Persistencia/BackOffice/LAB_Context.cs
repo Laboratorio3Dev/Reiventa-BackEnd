@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Reinventa.Dominio.BackOffice;
+using Reinventa.Dominio.Ofertas;
 using Reinventa.Dominio.UsuarioRoles;
 
 
@@ -23,5 +24,6 @@ namespace Reinventa.Persistencia.BackOffice
         public DbSet<Rol> Roles { get; set; }       
         public DbSet<LAB_Log> LAB_Log { get; set; }
         public DbSet<LAB_Usuario> LAB_Usuario { get; set; }
+        public DbSet<PLD_BaseCliente> PLD_BaseCliente { get; set; }
     }
 }
