@@ -10,12 +10,14 @@
     <PackageReference Include="Aspose.Cells" Version="25.12.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="9.0.5" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.3" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Reinventa.Aplicacion\Reinventa.Aplicacion.csproj" />
+    <ProjectReference Include="..\Reinventa.Infraestructura\Reinventa.Infraestructura.csproj" />
     <ProjectReference Include="..\Reinventa.Seguridad\Reinventa.Seguridad.csproj" />
   </ItemGroup>
 

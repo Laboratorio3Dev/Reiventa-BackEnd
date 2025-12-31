@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reinventa.Utilitarios", "Re
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsolaHuellaCarbonoPJ", "ConsolaHuellaCarbonoPJ\ConsolaHuellaCarbonoPJ.csproj", "{2CE61623-F820-41E6-A470-4ACEE6948949}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reinventa.Infraestructura", "Reinventa.Infraestructura\Reinventa.Infraestructura.csproj", "{D6FD3137-5879-4B94-ABA6-7266AFB7264F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -51,6 +53,10 @@ Global
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2CE61623-F820-41E6-A470-4ACEE6948949}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D6FD3137-5879-4B94-ABA6-7266AFB7264F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6FD3137-5879-4B94-ABA6-7266AFB7264F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6FD3137-5879-4B94-ABA6-7266AFB7264F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6FD3137-5879-4B94-ABA6-7266AFB7264F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
