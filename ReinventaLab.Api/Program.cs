@@ -7,6 +7,9 @@ using Microsoft.IdentityModel.Tokens;
 using Reinventa.Aplicacion.Contratos;
 using Reinventa.Aplicacion.NPS;
 using Reinventa.Aplicacion.Oficina.Productos.ListarProductos;
+using Reinventa.Infraestructura.Auth;
+using Reinventa.Infraestructura.Configuracion;
+using Reinventa.Infraestructura.Email;
 using Reinventa.Persistencia.Aprendizaje;
 using Reinventa.Persistencia.BackOffice;
 using Reinventa.Persistencia.HuellaCarbono;
@@ -103,6 +106,14 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.CustomSchemaIds(type => type.FullName);
 });
+//Configracion de correo
+builder.Services.Configure<AuthApiSettings>(
+    builder.Configuration.GetSection("AuthApi"));
+builder.Services.Configure<CorreoApiSettings>(
+    builder.Configuration.GetSection("CorreoApi"));
+
+builder.Services.AddHttpClient<ITokenService, TokenService>();
+builder.Services.AddHttpClient<ICorreoService, CorreoApiService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

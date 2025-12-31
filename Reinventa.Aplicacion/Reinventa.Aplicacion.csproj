@@ -19,6 +19,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Reinventa.Dominio\Reinventa.Dominio.csproj" />
+    <ProjectReference Include="..\Reinventa.Infraestructura\Reinventa.Infraestructura.csproj" />
     <ProjectReference Include="..\Reinventa.Persistencia\Reinventa.Persistencia.csproj" />
     <ProjectReference Include="..\Reinventa.Utilitarios\Reinventa.Utilitarios.csproj" />
   </ItemGroup>

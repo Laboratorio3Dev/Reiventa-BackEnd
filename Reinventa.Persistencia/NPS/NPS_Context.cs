@@ -45,6 +45,7 @@ namespace Reinventa.Persistencia.NPS
         public DbSet<SA_PRODUCTO> SA_PRODUCTO { get; set; }
         public DbSet<SA_DIMENSION> SA_DIMENSION { get; set; }
         public DbSet<OFI_Producto> OFI_Producto { get; set; }
+        public DbSet<OFI_VentaDigital> OFI_VentaDigital { get; set; }
 
     }
 }
