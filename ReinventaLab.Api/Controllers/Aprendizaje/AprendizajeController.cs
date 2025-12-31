@@ -12,7 +12,7 @@ using static Reinventa.Aplicacion.Aprendizaje.Transacciones;
 
 namespace ReinventaLab.Api.Controllers.Aprendizaje
 {
-    //https://localhost:44396/api/NPS/Encuesta
+    //https://localhost:44396/api/BackOffice/Aprendizaje
     [Route("api/BackOffice/[controller]")]
     [ApiController]
     public class AprendizajeController : ControllerBase

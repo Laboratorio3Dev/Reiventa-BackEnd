@@ -13,5 +13,6 @@ namespace Reinventa.Dominio.BackOffice
         public string Url { get; set; }
         public int IdPadre { get; set; }
         public int Orden { get; set; }
+        public string Icono { get; set; }
     }
 }
