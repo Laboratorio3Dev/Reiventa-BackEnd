@@ -47,6 +47,7 @@ namespace Reinventa.Aplicacion.BackOffice
                             ErrorMessage = "Usuario o Contraseña incorrecto",
                             IsSuccess = false,
                             IdUsuario = 0,
+                            IdOficina = 0,
                             NombreCompleto = string.Empty,
                             Token = string.Empty,
                             UsuarioWindows = string.Empty,
@@ -59,6 +60,7 @@ namespace Reinventa.Aplicacion.BackOffice
                     {
                         IsSuccess = true,
                         IdUsuario = usuario.IdUsuario,
+                        IdOficina = usuario.IdOficina==null?0:(int) usuario.IdOficina,
                         NombreCompleto = usuario.NombreCompleto,
                         Token = _jwtGenerador.CrearToken(usuario),
                         UsuarioWindows = usuario.UsuarioWindows,
