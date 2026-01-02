@@ -37,7 +37,7 @@ namespace Reinventa.Infraestructura.Email
             _http.DefaultRequestHeaders.Remove("sistemaEmisor");
             _http.DefaultRequestHeaders.Add(
            "fechaHora",
-           DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")
+           DateTime.UtcNow.ToString("yyyyMMdd HHmmss")
        );
 
             _http.DefaultRequestHeaders.Add(
