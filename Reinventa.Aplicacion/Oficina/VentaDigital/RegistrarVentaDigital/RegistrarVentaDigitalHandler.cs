@@ -65,10 +65,16 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                     HtmlEnviado = producto.FormatoCorreo
                 };
 
-                _context.OFI_VentaDigital.Add(registro);
+              //  _context.OFI_VentaDigital.Add(registro);
                 await _context.SaveChangesAsync(ct);
 
-
+                var destinatarios = req.CorreoCliente
+                .Split(';', StringSplitOptions.RemoveEmptyEntries)
+                .Select(c => new
+                {
+                    enderecoCorreo = c.Trim()
+                })
+                .ToList();
                 var payloadCorreo = new
                 {
                     enviarCorreo = new
@@ -84,7 +90,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                         },
                         destinatario = new[]
                    {
-                        new { enderecoCorreo = req.CorreoCliente }
+                        new { enderecoCorreo = destinatarios }
                     }
                     }
                 };
