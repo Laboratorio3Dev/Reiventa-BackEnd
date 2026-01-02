@@ -65,7 +65,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                     HtmlEnviado = producto.FormatoCorreo
                 };
 
-                _context.OFI_VentaDigital.Add(registro);
+              //  _context.OFI_VentaDigital.Add(registro);
                 await _context.SaveChangesAsync(ct);
 
 

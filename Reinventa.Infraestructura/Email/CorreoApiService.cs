@@ -33,6 +33,17 @@ namespace Reinventa.Infraestructura.Email
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
+            _http.DefaultRequestHeaders.Remove("fechaHora");
+            _http.DefaultRequestHeaders.Remove("sistemaEmisor");
+            _http.DefaultRequestHeaders.Add(
+           "fechaHora",
+           DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss")
+       );
+
+            _http.DefaultRequestHeaders.Add(
+                "sistemaEmisor",
+                _settings.SistemaEmisor
+            );
             var response = await _http.PostAsJsonAsync(
                 _settings.ApiUrl,
                 payload
