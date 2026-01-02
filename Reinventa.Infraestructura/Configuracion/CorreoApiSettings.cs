@@ -13,5 +13,6 @@ namespace Reinventa.Infraestructura.Configuracion
         public string ClientId { get; set; }
         public string ClientSecret { get; set; }
         public string Remitente { get; set; }
+        public string SistemaEmisor { get; set; }
     }
 }
