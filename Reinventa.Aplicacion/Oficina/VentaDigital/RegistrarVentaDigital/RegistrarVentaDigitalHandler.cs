@@ -28,7 +28,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
             _context = context;
             _tokenService = tokenService;
             _correoService = correoService;
-           
+
         }
 
         public async Task<ResponseTransacciones> Handle(
@@ -37,7 +37,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
         {
             var req = command.Request;
 
-         
+
             var token = await _tokenService.ObtenerTokenAsync();
 
             var productos = await _context.OFI_Producto
@@ -47,7 +47,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
             if (productos.Count != req.ProductosSeleccionados.Count)
                 throw new Exception("Uno o más productos no existen");
 
-          
+
             foreach (var producto in productos)
             {
                 var registro = new OFI_VentaDigital
@@ -65,7 +65,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                     HtmlEnviado = producto.FormatoCorreo
                 };
 
-              //  _context.OFI_VentaDigital.Add(registro);
+                //  _context.OFI_VentaDigital.Add(registro);
                 await _context.SaveChangesAsync(ct);
 
                 var destinatarios = req.CorreoCliente
@@ -75,6 +75,9 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                     enderecoCorreo = c.Trim()
                 })
                 .ToList();
+
+                
+
                 var payloadCorreo = new
                 {
                     enviarCorreo = new
@@ -86,16 +89,22 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                                 enderecoCorreo = "BancaDigital@banbif.com.pe"
                             },
                             asunto = producto.Asunto,
-                            contenido = producto.FormatoCorreo
-                        },
-                        destinatario = new[]
-                   {
-                        new { enderecoCorreo = destinatarios }
-                    }
+                            contenido = producto.FormatoCorreo,
+                          
+                            destinatario = new[]
+                            {
+                                new
+                                {
+                                    enderecoCorreo = req.CorreoCliente
+                                }
+                            }
+                        }
                     }
                 };
 
-             
+
+
+
                 await _correoService.EnviarCorreoAsync(token, payloadCorreo);
                 registro.OfertaEnviada = true;
                 await _context.SaveChangesAsync(ct);
