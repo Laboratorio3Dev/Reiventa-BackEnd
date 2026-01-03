@@ -25,11 +25,11 @@ namespace ReinventaLab.Api.Controllers.Ofertas
             return await _mediator.Send(data);
         }
 
-        //[HttpPost("CargarBaseClientes")]
-        //public async Task<ActionResult<ResponseTransacciones>> CargarBaseClientes(Transaccional.CargarBaseClientes.Ejecuta data)
-        //{
-        //    return await _mediator.Send(data);
-        //}
+        [HttpPost("ListarHistorialSolicitudesPLD")]
+        public async Task<ActionResult<List<ListarSolicitudesPLD_DTO>>> ListarHistorialSolicitudesPLD(Transaccional.ListarSolicitudes.Ejecuta data)
+        {
+            return await _mediator.Send(data);
+        }
 
         [HttpPost("CargarBaseClientes")]
         public async Task<IActionResult> CargarBaseClientes( IFormFile archivo, CancellationToken cancellationToken)
