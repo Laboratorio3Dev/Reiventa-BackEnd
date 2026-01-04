@@ -33,6 +33,27 @@ namespace Reinventa.Infraestructura.Email
             _http.DefaultRequestHeaders.Authorization =
                 new AuthenticationHeaderValue("Bearer", token);
 
+            _http.DefaultRequestHeaders.Remove("fechaHora");
+            _http.DefaultRequestHeaders.Remove("sistemaEmisor");
+            _http.DefaultRequestHeaders.Remove("codigoCanal");
+            _http.DefaultRequestHeaders.Remove("idTransaction");
+            _http.DefaultRequestHeaders.Add(
+           "fechaHora",
+           DateTime.UtcNow.ToString("yyyyMMdd HHmmss")
+       );
+
+            _http.DefaultRequestHeaders.Add(
+                "sistemaEmisor",
+                _settings.SistemaEmisor
+            );
+            _http.DefaultRequestHeaders.Add(
+              "codigoCanal",
+              "REIVENTA"
+          );
+            _http.DefaultRequestHeaders.Add(
+              "idTransaction",
+              "ID00000000000001"
+          );
             var response = await _http.PostAsJsonAsync(
                 _settings.ApiUrl,
                 payload
