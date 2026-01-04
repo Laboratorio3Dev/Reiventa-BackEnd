@@ -26,6 +26,5 @@ namespace Reinventa.Dominio.NPS
         public ICollection<NPS_ClienteEncuesta>? ClientesEncuesta { get; set; }
         public ICollection<NPS_EncuestaPregunta> EncuestaPreguntas { get; set; } = new List<NPS_EncuestaPregunta>();
         public ICollection<NPS_Respuesta>? Respuestas { get; set; }
-        public ICollection<NPS_DetalleRespuesta>? DetalleRespuestas{ get; set; }
     }
 }
