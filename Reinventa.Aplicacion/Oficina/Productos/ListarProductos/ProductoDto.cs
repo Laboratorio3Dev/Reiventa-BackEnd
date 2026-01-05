@@ -14,5 +14,6 @@ namespace Reinventa.Aplicacion.Oficina.Productos.ListarProductos
         public string? SubTitulo { get; set; }
         public int? Orden { get; set; }
         public bool Activo { get; set; }
+        public string FormatoCorreo { get; set; }
     }
 }

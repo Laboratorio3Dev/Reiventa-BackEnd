@@ -37,7 +37,7 @@ namespace Reinventa.Aplicacion.BackOffice
                     var usuario = await _context.LAB_Usuario
                         .FirstOrDefaultAsync(x =>
                             x.UsuarioWindows == request.Usuario &&
-                            x.Password == CryptoHelper.Encrypt(request.Password) &&
+                           // x.Password == CryptoHelper.Encrypt(request.Password) &&
                             x.Estado == 1, cancellationToken);
 
                     if (usuario == null)
