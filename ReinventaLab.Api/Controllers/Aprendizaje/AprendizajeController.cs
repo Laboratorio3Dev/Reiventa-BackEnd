@@ -5,6 +5,8 @@ using Reinventa.Aplicacion;
 using Reinventa.Aplicacion.Aprendizaje;
 using Reinventa.Aplicacion.BackOffice;
 using Reinventa.Dominio.Aprendizaje;
+using Reinventa.Dominio.BackOffice;
+using Reinventa.Dominio.UsuarioRoles;
 using Reinventa.Utilitarios.DTOS;
 using static Reinventa.Aplicacion.Aprendizaje.Transacciones;
 
@@ -75,6 +77,12 @@ namespace ReinventaLab.Api.Controllers.Aprendizaje
 
         [HttpPost("ListarComentarios")]
         public async Task<List<ProductoInsightDTO>> ListarComentarios(Consultas.ListarComentarios.Ejecuta data)
+        {
+            return await _mediator.Send(data);
+        }
+
+        [HttpPost("ListarUsuariosAprendizaje")]
+        public async Task<List<UsuarioDTO>> ListarUsuariosAprendizaje(InicioSesion.ListarUsuario.Ejecutar data)
         {
             return await _mediator.Send(data);
         }

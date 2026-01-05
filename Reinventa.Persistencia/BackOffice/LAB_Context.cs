@@ -19,6 +19,7 @@ namespace Reinventa.Persistencia.BackOffice
             // 👇 Aquí configuras que Menu no tiene clave (porque viene de un SP)
             modelBuilder.Entity<Menu>().HasNoKey();
             modelBuilder.Entity<Rol>().HasNoKey();
+            modelBuilder.Entity<UsuarioDTO>().HasNoKey();
         }
         public DbSet<Menu> Menus { get; set; }
         public DbSet<Rol> Roles { get; set; }       
@@ -26,7 +27,7 @@ namespace Reinventa.Persistencia.BackOffice
         public DbSet<LAB_Usuario> LAB_Usuario { get; set; }
         public DbSet<PLD_BaseCliente> PLD_BaseCliente { get; set; }
         public DbSet<Lab_InicioSesion> Lab_InicioSesion { get; set; }
-
+        public DbSet<UsuarioDTO> Lab_Usuarios { get; set; }
         
     }
 }
