@@ -15,15 +15,14 @@ using Reinventa.Persistencia.BackOffice;
 using Reinventa.Persistencia.HuellaCarbono;
 using Reinventa.Persistencia.NPS;
 using Reinventa.Seguridad.TokenSeguridad;
+using Reinventa.Utilitarios.DTOS;
 using ReinventaLab.Api.Middleware;
 using System.Text;
 using System.Text.Json.Serialization;
-
 var builder = WebApplication.CreateBuilder(args);
 
 
 var configuration = builder.Configuration;
-
 // Add services to the container.
 builder.Services.AddDbContext<NPS_Context>(opt =>
 {
@@ -72,13 +71,13 @@ builder.Services.AddControllers(opt =>
     opt.Filters.Add(new AuthorizeFilter(policy));
 });
 
-var corsOrigin = builder.Configuration["Cors:AllowedOrigin"];
-
+var corsOrigin = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+builder.Services.Configure<FrontendSettings>(builder.Configuration.GetSection("Frontend"));
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("PermitirBlazor", policy =>
     {
-        policy.WithOrigins(corsOrigin) // Tu app Blazor
+        policy.WithOrigins(corsOrigin!) 
               .AllowAnyMethod()
               .AllowAnyHeader();
     });

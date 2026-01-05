@@ -25,6 +25,6 @@ namespace Reinventa.Dominio.NPS
 
         [JsonIgnore]
         public NPS_Encuesta Encuesta { get; set; } = null!;
-        public ICollection<NPS_Respuesta> Respuestas { get; set; } = new List<NPS_Respuesta>();
+        
     }
 }
