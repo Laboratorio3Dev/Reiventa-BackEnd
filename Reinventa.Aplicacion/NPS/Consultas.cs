@@ -2,7 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Reinventa.Dominio.NPS;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Utilitarios;
 using Reinventa.Utilitarios.DTOS;
+using static Reinventa.Aplicacion.NPS.Consultas.DNICliente.ValidarClienteEnEncuesta;
 
 
 namespace Reinventa.Aplicacion.NPS
@@ -411,9 +413,63 @@ namespace Reinventa.Aplicacion.NPS
                         idEncuesta = Convert.ToInt32(ValoresSeparados.First().Replace(" ", ""));
                         tipoPersona = ValoresSeparados.Last();
 
+
+                        var result = new Result { Existe = false, FlagContesta = null };
+                        
+
+                        // validar encuesta vigente/activa
+                        var hoy = DateTime.Now;
+                        var encuestaVigente = await _context.NPS_Encuesta
+                            .AnyAsync(e =>
+                                e.IdEncuesta == idEncuesta &&
+                                (e.FechaInicio == null || e.FechaInicio <= hoy) &&
+                                (e.FechaFin == null || e.FechaFin >= hoy),
+                                cancellationToken);
+
+                        var encuesta = new EncuestaDto();
+                        if (encuestaVigente)
+                        {
+                            encuesta = await _context.NPS_Encuesta
+                            .Where(e => e.IdEncuesta == idEncuesta)
+                            .Select(e => new EncuestaDto
+                            {
+                                IdEncuesta = e.IdEncuesta,
+                                NombreEncuesta = e.NombreEncuesta,
+                                FechaInicio = e.FechaInicio,
+                                FechaFin = e.FechaFin,
+                                FlagLogin = e.FlagLogin,
+                                FlagBase = e.FlagBase
+
+                            }).FirstOrDefaultAsync();
+                        }
+
+
+
+                        if (!encuestaVigente) return null;
+
+                        // Buscar cliente en la base de esa encuesta y traer FlagContesta
                         string? url = await _context.NPS_ClienteEncuesta.Where(e => e.NroDocumento == Dni.DNICliente && idEncuesta == e.IdEncuesta)
                                         .Select(e => e.LinkPersonalizado)
                                         .FirstOrDefaultAsync(cancellationToken);
+
+                        if (url == null && (encuesta.FlagLogin))
+                        {
+                            var clienteGuardado = new NPS_ClienteEncuesta
+                            {
+                                IdEncuesta = idEncuesta,
+                                NroDocumento = Dni.DNICliente,
+                                Nombre="nombreGenerico",
+                                FlagContesta = 0,
+                                LinkPersonalizado = CryptoHelper.Encrypt($"{Dni.DNICliente}|{idEncuesta}"),
+                                UsuarioCreacion = "Sistema",
+                                FechaCreacion = DateTime.Now
+                            };
+
+                            _context.NPS_ClienteEncuesta.Add(clienteGuardado);
+                            await _context.SaveChangesAsync();
+                            url = clienteGuardado.LinkPersonalizado;
+                        }
+
                         return $"{Uri.EscapeDataString(url)}";
                     }
                     catch
@@ -539,14 +595,14 @@ namespace Reinventa.Aplicacion.NPS
 
                 public async Task<ExportRespuestasEncuestaDto> Handle(Query request, CancellationToken cancellationToken)
                 {
-                    // 1) Traer preguntas (para columnas)
-                    var preguntas = await _context.NPS_EncuestaPregunta // <-- AJUSTA
+                    // 1) Traer preguntas 
+                    var preguntas = await _context.NPS_EncuestaPregunta
                         .AsNoTracking()
                         .Where(p => p.IdEncuesta == request.Id)
                         .OrderBy(p => p.Orden)
                         .Select(p => new
                         {
-                            IdPregunta = p.IdEncuestaPregunta,  // <-- AJUSTA
+                            IdPregunta = p.IdEncuestaPregunta,
                             Orden = p.Orden ?? 0,
                             Tipo = p.TipoPregunta,
                             Texto = p.Pregunta,
@@ -555,7 +611,7 @@ namespace Reinventa.Aplicacion.NPS
                         })
                         .ToListAsync(cancellationToken);
 
-                    // 2) Traer respuestas cabecera (1 por cliente que respondió)
+                    // 2) Traer respuestas cabecera 
                     var respuestas = await _context.NPS_Respuesta
                         .AsNoTracking()
                         .Where(r => r.IdEncuesta == request.Id)
@@ -571,7 +627,7 @@ namespace Reinventa.Aplicacion.NPS
 
                     var idsRespuesta = respuestas.Select(r => r.IdRespuesta).ToList();
 
-                    // 3) Traer detalle (todos los detalles de esas respuestas)
+                    // 3) Traer detalle 
                     var detalles = await _context.NPS_DetalleRespuesta
                         .AsNoTracking()
                         .Where(d => d.IdRespuesta != null && idsRespuesta.Contains(d.IdRespuesta.Value))
@@ -589,10 +645,19 @@ namespace Reinventa.Aplicacion.NPS
                         d => d
                     );
 
-                    // 4) Armar estructura exportable
-                    var export = new ExportRespuestasEncuestaDto();
+                    var encuesta = await _context.NPS_Encuesta
+                        .Where(e =>
+                                e.IdEncuesta == request.Id)
+                        .Select(e => new EncuestaDto
+                        {
+                            NombreEncuesta=e.NombreEncuesta,
+                            IdEncuesta = e.IdEncuesta
 
-                    // Columnas fijas (como tu excel)
+                        }).FirstOrDefaultAsync();
+                            // 4) Armar estructura exportable
+                            var export = new ExportRespuestasEncuestaDto();
+
+                    // Columnas fijas
                     export.Columns.Add(new ExportColumnDto("Documento", "Documento"));
                     export.Columns.Add(new ExportColumnDto("Area", "Area evaluada"));
                     export.Columns.Add(new ExportColumnDto("Fecha", "Fecha y hora Resulta"));
@@ -627,14 +692,13 @@ namespace Reinventa.Aplicacion.NPS
                         }
 
                     }
-
-                    // 5) Filas (una por IdRespuesta)
+                    // 5) Filas 
                     foreach (var r in respuestas)
                     {
                         var row = new Dictionary<string, string?>()
                         {
                             ["Documento"] = r.NroDocumentoCliente,
-                            ["Area"] = r.CodigoLogAsociado,
+                            ["Area"] = encuesta.NombreEncuesta,
                             ["Fecha"] = r.Fecha?.ToString("dd/MM/yyyy HH:mm"),
                             ["LinkInicio"] = r.LinkInicio
                         };
@@ -650,7 +714,7 @@ namespace Reinventa.Aplicacion.NPS
                             }
                             else if (p.Tipo == "Pregunta")
                             {
-                                // tu guardado usa ValorComentario para texto
+                                
                                 row[$"Q{p.Orden}_texto"] = det?.ValorComentario ?? det?.ValorRespuesta;
                             }
                             else if (p.Tipo == "Escala de Likert")
@@ -671,16 +735,16 @@ namespace Reinventa.Aplicacion.NPS
 
                                 for (int i = 0; i < yCount; i++)
                                 {
-                                    // part = "0".."n"
+                                   
                                     string? textoSeleccionado = null;
 
                                     if (i < parts.Count && int.TryParse(parts[i], out var idx))
                                     {
-                                        // idx se usa como índice en xs
+                                      
                                         if (idx >= 0 && idx < xs.Count)
                                             textoSeleccionado = xs[idx];
                                         else
-                                            textoSeleccionado = parts[i]; // fallback
+                                            textoSeleccionado = parts[i]; 
                                     }
 
                                     row[$"Q{p.Orden}_likert_{i + 1}"] = textoSeleccionado;
