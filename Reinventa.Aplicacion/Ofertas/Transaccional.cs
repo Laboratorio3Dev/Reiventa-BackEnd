@@ -101,7 +101,6 @@ namespace Reinventa.Aplicacion.Ofertas
 
 
         }
-
         public class CargarBaseClientes
         {
             public class Ejecuta : IRequest<ResponseTransacciones>
@@ -228,6 +227,59 @@ namespace Reinventa.Aplicacion.Ofertas
             }
 
 
+        }
+
+        public class ListarSolicitudes
+        {
+            public class Ejecuta : IRequest<List<ListarSolicitudesPLD_DTO>>
+            {
+                public string? FechaInicio { get; set; }
+                public string? FechaFin { get; set; }
+            }
+
+            public class Manejador : IRequestHandler<Ejecuta, List<ListarSolicitudesPLD_DTO>>
+            {
+                private readonly LAB_Context _context;
+
+                public Manejador(LAB_Context context)
+                {
+                    _context = context;
+                }
+
+                public async Task<List<ListarSolicitudesPLD_DTO>> Handle(Ejecuta request, CancellationToken cancellationToken)
+                {
+                  
+
+                    var parametros = new[]
+                    {
+                        new SqlParameter("@FECHA_INICIO", SqlDbType.VarChar)
+                        {
+                            Value = request.FechaInicio
+                        },
+                        new SqlParameter("@FECHA_FIN", SqlDbType.VarChar)
+                        {
+                            Value = request.FechaFin
+                        }
+
+                    };
+
+
+                    var planes = await _context.SolicitudesPLD
+                        .FromSqlRaw("EXEC USP_PLD_LISTAR_SOLICITUDES @FECHA_INICIO, @FECHA_FIN", parametros)
+                        .ToListAsync(cancellationToken);
+
+                    if (planes == null || planes.Count == 0)
+                        return new List<ListarSolicitudesPLD_DTO>();
+
+                    return planes.Select(e => new ListarSolicitudesPLD_DTO
+                    {
+                        Documento = e.Documento,
+                        Fecha=e.Fecha,
+                        FlagBase=e.FlagBase,
+                        Usuario = e.Usuario 
+                    }).ToList();
+                }
+            }
         }
     }
 }
