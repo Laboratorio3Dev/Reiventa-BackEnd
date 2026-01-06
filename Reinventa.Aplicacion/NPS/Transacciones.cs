@@ -264,7 +264,8 @@ namespace Reinventa.Aplicacion.NPS
                     registro.FlagLogin = request.DatosEncuesta.FlagLogin;
                     registro.ImagenLogin = request.DatosEncuesta.ImagenLogin;
                     registro.TituloEncuesta = request.DatosEncuesta.TituloEncuesta;
-
+                    registro.FechaInicio = request.DatosEncuesta.FechaInicio;
+                    registro.NombreEncuesta = request.DatosEncuesta.NombreEncuesta;
                     var retorno = await _context.SaveChangesAsync(cancellationToken);
                     retorno = 1;
 
