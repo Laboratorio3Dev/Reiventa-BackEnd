@@ -35,23 +35,16 @@ namespace Reinventa.Aplicacion.Oficina.Productos.EliminarProducto
                 };
             }
 
-            if (!producto.Activo)
-            {
-                return new ResponseTransacciones
-                {
-                    IsSuccess = false,
-                    Message = "El producto ya está inactivo"
-                };
-            }
+         
 
             var ordenDesactivado = producto.Orden;
 
-            // 🔴 Desactivar
-            producto.Activo = false;
+         
+            producto.Activo = request.Activar;
 
             // 🔄 Reordenar solo los activos
             var productosAfectados = await _context.OFI_Producto
-                .Where(p => p.Activo && p.Orden > ordenDesactivado)
+                .Where(p =>p.Orden > ordenDesactivado)
                 .OrderBy(p => p.Orden)
                 .ToListAsync(cancellationToken);
 
@@ -65,8 +58,9 @@ namespace Reinventa.Aplicacion.Oficina.Productos.EliminarProducto
             return new ResponseTransacciones
             {
                 IsSuccess = true,
-                Message = "Producto desactivado correctamente",
-                IdValue = producto.IdProducto
+                Message = request.Activar
+             ? "Producto activado correctamente"
+             : "Producto desactivado correctamente"
             };
         }
     }

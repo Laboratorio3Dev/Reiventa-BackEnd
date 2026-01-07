@@ -32,7 +32,7 @@ namespace Reinventa.Aplicacion.Oficina.Productos.ListarProductos
                 query = query.Where(p =>
                     p.Titulo.Contains(request.TextoBusqueda));
             }
-           query = query.Where(p => p.Activo);
+          
            query = query.OrderBy(p => p.Orden);
             return await query
                 .Select(p => new ProductoDto

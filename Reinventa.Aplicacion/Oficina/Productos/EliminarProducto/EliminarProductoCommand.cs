@@ -10,5 +10,6 @@ namespace Reinventa.Aplicacion.Oficina.Productos.EliminarProducto
     public class EliminarProductoCommand : IRequest<ResponseTransacciones>
     {
         public int IdProducto { get; set; }
+        public bool Activar { get; set; }
     }
 }

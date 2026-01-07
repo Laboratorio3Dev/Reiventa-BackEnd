@@ -27,7 +27,7 @@ namespace Reinventa.Aplicacion.Oficina.Productos.CrearProducto
             CrearProductoCommand request,
             CancellationToken cancellationToken)
         {
-       throw new NotImplementedException();
+ 
             var ordenNuevo = request.Orden;
             // Desplazar los existentes
             var productosAfectados = await _context.OFI_Producto
