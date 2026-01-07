@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Reinventa.Infraestructura.Configuracion;
 using System;
 using System.Collections.Generic;
@@ -19,51 +20,82 @@ namespace Reinventa.Infraestructura.Email
     {
         private readonly HttpClient _http;
         private readonly CorreoApiSettings _settings;
-
+        private readonly ILogger<CorreoApiService> _logger;
         public CorreoApiService(
             HttpClient http,
-            IOptions<CorreoApiSettings> settings)
+            IOptions<CorreoApiSettings> settings,
+             ILogger<CorreoApiService> logger
+            )
         {
             _http = http;
             _settings = settings.Value;
+            _logger = logger;
         }
 
         public async Task EnviarCorreoAsync(string token, object payload)
         {
-            _http.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", token);
-
-            _http.DefaultRequestHeaders.Remove("fechaHora");
-            _http.DefaultRequestHeaders.Remove("sistemaEmisor");
-            _http.DefaultRequestHeaders.Remove("codigoCanal");
-            _http.DefaultRequestHeaders.Remove("idTransaction");
-            _http.DefaultRequestHeaders.Add(
-           "fechaHora",
-           DateTime.UtcNow.ToString("yyyyMMdd HHmmss")
-       );
-
-            _http.DefaultRequestHeaders.Add(
-                "sistemaEmisor",
-                _settings.SistemaEmisor
-            );
-            _http.DefaultRequestHeaders.Add(
-              "codigoCanal",
-              "REIVENTA"
-          );
-            _http.DefaultRequestHeaders.Add(
-              "idTransaction",
-              "ID00000000000001"
-          );
-            var response = await _http.PostAsJsonAsync(
-                _settings.ApiUrl,
-                payload
+            _logger.LogInformation(
+                "Iniciando envío de correo vía API externa. Url={Url}",
+                _settings.ApiUrl
             );
 
-            if (!response.IsSuccessStatusCode)
+            try
             {
-                var error = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Error enviando correo: {error}");
+                _http.DefaultRequestHeaders.Authorization =
+               new AuthenticationHeaderValue("Bearer", token);
+
+                _http.DefaultRequestHeaders.Remove("fechaHora");
+                _http.DefaultRequestHeaders.Remove("sistemaEmisor");
+                _http.DefaultRequestHeaders.Remove("codigoCanal");
+                _http.DefaultRequestHeaders.Remove("idTransaction");
+                _http.DefaultRequestHeaders.Add(
+               "fechaHora",
+               DateTime.UtcNow.ToString("yyyyMMdd HHmmss")
+           );
+
+                _http.DefaultRequestHeaders.Add(
+                    "sistemaEmisor",
+                    _settings.SistemaEmisor
+                );
+                _http.DefaultRequestHeaders.Add(
+                  "codigoCanal",
+                  "REIVENTA"
+              );
+                _http.DefaultRequestHeaders.Add(
+                  "idTransaction",
+                  "ID00000000000001"
+              );
+                var response = await _http.PostAsJsonAsync(
+                    _settings.ApiUrl,
+                    payload
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+
+                    _logger.LogError(
+                        "Error enviando correo. StatusCode={StatusCode}, Response={Response}",
+                        response.StatusCode,
+                        error
+                    );
+
+                    throw new Exception($"Error enviando correo: {error}");
+                }
+
+                _logger.LogInformation("Correo enviado correctamente");
             }
+            catch (Exception ex)
+            {
+
+                _logger.LogError(
+                   ex,
+                   "Excepción al intentar enviar correo"
+               );
+
+                throw; 
+            }
+           
         }
     }
 }

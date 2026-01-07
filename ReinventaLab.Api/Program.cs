@@ -121,12 +121,18 @@ builder.Services.AddHttpClient<ITokenService, TokenService>();
 builder.Services.AddHttpClient<ICorreoService, CorreoApiService>();
 
 //LOGS
+var rutaLogs = builder.Configuration["Log:Path"] ?? "Logs/app-back-.log";
+
 Log.Logger = new LoggerConfiguration()
     .MinimumLevel.Information()
+    // Filtra logs repetitivos de Microsoft para que el archivo sea limpio
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.Console()
     .WriteTo.File(
-        "Logs/app-.log",
-        rollingInterval: RollingInterval.Day,
-        retainedFileCountLimit: 30
+        path: rutaLogs,
+        rollingInterval: RollingInterval.Day, // Un archivo por cada día
+        retainedFileCountLimit: 31,           // Conserva un mes de historial
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
     )
     .CreateLogger();
 
