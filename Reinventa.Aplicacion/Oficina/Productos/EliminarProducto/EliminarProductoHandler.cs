@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Reinventa.Aplicacion.Oficina.Productos.EliminarProducto
 {
     public class EliminarProductoHandler : IRequestHandler<EliminarProductoCommand, ResponseTransacciones>
     {
-        private readonly NPS_Context _context;
+        private readonly OFI_Context _context;
 
-        public EliminarProductoHandler(NPS_Context context)
+        public EliminarProductoHandler(OFI_Context context)
         {
             _context = context;
         }

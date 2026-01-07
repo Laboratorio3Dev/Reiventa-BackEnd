@@ -14,9 +14,11 @@ using Reinventa.Persistencia.Aprendizaje;
 using Reinventa.Persistencia.BackOffice;
 using Reinventa.Persistencia.HuellaCarbono;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using Reinventa.Seguridad.TokenSeguridad;
 using Reinventa.Utilitarios.DTOS;
 using ReinventaLab.Api.Middleware;
+using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +43,10 @@ builder.Services.AddDbContext<Huella_Context>(opt =>
 });
 
 builder.Services.AddDbContext<SA_Context>(opt =>
+{
+    opt.UseSqlServer(configuration.GetConnectionString("ConexionNPS"));
+});
+builder.Services.AddDbContext<OFI_Context>(opt =>
 {
     opt.UseSqlServer(configuration.GetConnectionString("ConexionNPS"));
 });
@@ -113,6 +119,19 @@ builder.Services.Configure<CorreoApiSettings>(
 
 builder.Services.AddHttpClient<ITokenService, TokenService>();
 builder.Services.AddHttpClient<ICorreoService, CorreoApiService>();
+
+//LOGS
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.File(
+        "Logs/app-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 30
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
