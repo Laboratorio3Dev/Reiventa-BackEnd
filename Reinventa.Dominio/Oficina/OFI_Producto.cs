@@ -28,5 +28,7 @@ namespace Reinventa.Dominio.Oficina
         public int? Orden { get; set; }
 
         public bool Activo { get; set; }
+
+      
     }
 }

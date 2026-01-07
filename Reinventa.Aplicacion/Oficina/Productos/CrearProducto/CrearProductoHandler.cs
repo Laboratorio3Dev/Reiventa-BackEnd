@@ -1,7 +1,9 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Reinventa.Dominio.Oficina;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +15,19 @@ namespace Reinventa.Aplicacion.Oficina.Productos.CrearProducto
     public class CrearProductoHandler
      : IRequestHandler<CrearProductoCommand, ResponseTransacciones>
     {
-        private readonly NPS_Context _context;
-
-        public CrearProductoHandler(NPS_Context context)
+        private readonly OFI_Context _context;
+        private readonly ILogger<CrearProductoHandler> _logger;
+        public CrearProductoHandler(OFI_Context context, ILogger<CrearProductoHandler> logger)
         {
-            _context = context;
+             _context = context;
+            _logger = logger;
         }
-
+   
         public async Task<ResponseTransacciones> Handle(
             CrearProductoCommand request,
             CancellationToken cancellationToken)
         {
+       throw new NotImplementedException();
             var ordenNuevo = request.Orden;
             // Desplazar los existentes
             var productosAfectados = await _context.OFI_Producto
@@ -58,7 +62,7 @@ namespace Reinventa.Aplicacion.Oficina.Productos.CrearProducto
                     IdValue = 0
                 };
             }
-
+         
             return new ResponseTransacciones
             {
                 IsSuccess = true,

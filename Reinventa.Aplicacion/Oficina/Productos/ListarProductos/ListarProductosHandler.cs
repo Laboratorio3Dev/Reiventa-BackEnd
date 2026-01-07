@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,9 @@ namespace Reinventa.Aplicacion.Oficina.Productos.ListarProductos
 {
     public class ListarProductosHandler : IRequestHandler<ListarProductosQuery, List<ProductoDto>>
     {
-        private readonly NPS_Context _context;
+        private readonly OFI_Context _context;
 
-        public ListarProductosHandler(NPS_Context context)
+        public ListarProductosHandler(OFI_Context context)
         {
             _context = context;
         }
@@ -31,16 +32,9 @@ namespace Reinventa.Aplicacion.Oficina.Productos.ListarProductos
                 query = query.Where(p =>
                     p.Titulo.Contains(request.TextoBusqueda));
             }
-
-           
            query = query.Where(p => p.Activo);
-            
-
-            query = query.OrderBy(p => p.Orden);
-
+           query = query.OrderBy(p => p.Orden);
             return await query
-              //  .Skip((request.Page - 1) * request.PageSize)
-               // .Take(request.PageSize)
                 .Select(p => new ProductoDto
                 {
                     IdProducto = p.IdProducto,
