@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Reinventa.Aplicacion.Oficina.Productos.ListarProductos;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace Reinventa.Aplicacion.Oficina.Productos.ObtenerProducto
 {
     internal class ObtenerProductoHandler : IRequestHandler<ObtenerProductoQuery, ProductoDto?>
     {
-        private readonly NPS_Context _context;
+        private readonly OFI_Context _context;
 
-        public ObtenerProductoHandler(NPS_Context context)
+        public ObtenerProductoHandler(OFI_Context context)
         {
             _context = context;
         }

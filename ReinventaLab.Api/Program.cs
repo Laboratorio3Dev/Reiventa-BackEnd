@@ -14,9 +14,11 @@ using Reinventa.Persistencia.Aprendizaje;
 using Reinventa.Persistencia.BackOffice;
 using Reinventa.Persistencia.HuellaCarbono;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using Reinventa.Seguridad.TokenSeguridad;
 using Reinventa.Utilitarios.DTOS;
 using ReinventaLab.Api.Middleware;
+using Serilog;
 using System.Text;
 using System.Text.Json.Serialization;
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +43,10 @@ builder.Services.AddDbContext<Huella_Context>(opt =>
 });
 
 builder.Services.AddDbContext<SA_Context>(opt =>
+{
+    opt.UseSqlServer(configuration.GetConnectionString("ConexionNPS"));
+});
+builder.Services.AddDbContext<OFI_Context>(opt =>
 {
     opt.UseSqlServer(configuration.GetConnectionString("ConexionNPS"));
 });
@@ -113,6 +119,25 @@ builder.Services.Configure<CorreoApiSettings>(
 
 builder.Services.AddHttpClient<ITokenService, TokenService>();
 builder.Services.AddHttpClient<ICorreoService, CorreoApiService>();
+
+//LOGS
+var rutaLogs = builder.Configuration["Log:Path"] ?? "Logs/app-back-.log";
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    // Filtra logs repetitivos de Microsoft para que el archivo sea limpio
+    .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.Console()
+    .WriteTo.File(
+        path: rutaLogs,
+        rollingInterval: RollingInterval.Day, // Un archivo por cada día
+        retainedFileCountLimit: 31,           // Conserva un mes de historial
+        outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}"
+    )
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
