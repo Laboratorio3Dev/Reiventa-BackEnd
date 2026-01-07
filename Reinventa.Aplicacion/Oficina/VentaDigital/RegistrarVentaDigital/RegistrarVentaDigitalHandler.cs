@@ -80,7 +80,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                             {
                                 enderecoCorreo = "BancaDigital@banbif.com.pe"
                             },
-                            asunto = producto.Asunto,
+                            asunto = producto.Asunto.Replace("{Nombre}", registro.NombreCliente),
                             contenido = producto.FormatoCorreo,
                           
                             destinatario = new[]

@@ -264,7 +264,8 @@ namespace Reinventa.Aplicacion.NPS
                     registro.FlagLogin = request.DatosEncuesta.FlagLogin;
                     registro.ImagenLogin = request.DatosEncuesta.ImagenLogin;
                     registro.TituloEncuesta = request.DatosEncuesta.TituloEncuesta;
-
+                    registro.FechaInicio = request.DatosEncuesta.FechaInicio;
+                    registro.NombreEncuesta = request.DatosEncuesta.NombreEncuesta;
                     var retorno = await _context.SaveChangesAsync(cancellationToken);
                     retorno = 1;
 
@@ -436,7 +437,7 @@ namespace Reinventa.Aplicacion.NPS
                     //Se carga el cliente mediante el link personalizado del mismo, además se valida si es elegible para responder
                     var cliente = await _context.NPS_ClienteEncuesta
                         .Where(c => c.IdEncuesta == idEncuesta && c.LinkPersonalizado == req.UsuarioToken)
-                        .Select(c => new { c.IdCliente, c.FlagContesta })
+                        .Select(c => new { c.IdCliente, c.FlagContesta,c.NroDocumento })
                         .FirstOrDefaultAsync(cancellationToken);
 
                     if (cliente == null) return false;
@@ -460,7 +461,7 @@ namespace Reinventa.Aplicacion.NPS
                             IdEncuesta = idEncuesta,
                             Fecha = hoy,
 
-                            NroDocumentoCliente = null,
+                            NroDocumentoCliente = cliente.NroDocumento,
 
                             CodigoLogAsociado = req.UsuarioToken,
 

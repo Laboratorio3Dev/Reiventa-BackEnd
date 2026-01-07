@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace Reinventa.Aplicacion.Oficina.Productos.CrearProducto
 {
-    public record CrearProductoCommand(
-     string Titulo,
-     string SubTitulo,
-     string Asunto,
-     string FormatoCorreo,
-     int Orden,
-     bool Activo
- ) : IRequest<int>;
+    public class CrearProductoCommand : IRequest<ResponseTransacciones>
+    {
+        public string Titulo { get; set; }
+        public string? SubTitulo { get; set; }
+        public string Asunto { get; set; }
+        public int? Orden { get; set; }
+        public string FormatoCorreo { get; set; }
+    }
 }
