@@ -3,6 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Reinventa.Aplicacion.Contratos;
 using Reinventa.Dominio.BackOffice;
+using Reinventa.Dominio.Ofertas;
 using Reinventa.Persistencia.Aprendizaje;
 using Reinventa.Persistencia.BackOffice;
 using Reinventa.Utilitarios;
@@ -148,6 +149,37 @@ namespace Reinventa.Aplicacion.BackOffice
                     };
                 }
 
+
+            }
+
+
+        }
+
+        public class ListarUsuario
+        {
+            public class Ejecutar : IRequest<List<UsuarioDTO>>
+            {
+                public int? Tipo { get; set; }
+            }
+
+            public class Manejador : IRequestHandler<Ejecutar, List<UsuarioDTO>>
+            {
+                private readonly LAB_Context _context;
+                private readonly IJwtGenerador _jwtGenerador;
+                public Manejador(LAB_Context context, IJwtGenerador jwtGenerador)
+                {
+                    _context = context;
+                    _jwtGenerador = jwtGenerador;
+                }
+
+                public async Task<List<UsuarioDTO>?> Handle(Ejecutar request, CancellationToken cancellationToken)
+                {
+                    var param = new SqlParameter("@TIPO", request.Tipo);
+
+                    return await _context.Lab_Usuarios
+                        .FromSqlRaw("EXEC USP_LAB_LISTAR_USUARIOS @TIPO", param)
+                        .ToListAsync();
+                }
 
             }
 
