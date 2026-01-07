@@ -94,5 +94,18 @@ namespace ReinventaLab.Api.Controllers.Oficinas
 
             return Ok(response);
         }
+
+        [HttpPost("CambiarEstado")]
+        public async Task<IActionResult> CambiarEstado(
+    [FromBody] EliminarProductoCommand command)
+        {
+            var response = await _mediator.Send(command);
+
+            if (!response.IsSuccess)
+                return BadRequest(response);
+
+            return Ok(response);
+        }
+
     }
 }
