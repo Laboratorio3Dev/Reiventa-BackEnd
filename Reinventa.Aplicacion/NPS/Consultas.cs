@@ -262,6 +262,7 @@ namespace Reinventa.Aplicacion.NPS
                             FechaFin = e.FechaFin,
                             TipoPersona = e.TipoPersona,
                             FlagLogin = e.FlagLogin,
+                            ImagenLogin= e.ImagenLogin,
                             FlagBase = e.FlagBase,
                             TituloEncuesta = e.TituloEncuesta,
                             TipoEncuesta = e.FlagLogin && e.FlagBase
