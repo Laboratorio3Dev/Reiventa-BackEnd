@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Reinventa.Dominio.Oficina;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina.Result;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,23 @@ namespace Reinventa.Persistencia.Oficina
         : base(options)
         { }
 
+        // Añade esta línea:
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
 
+            modelBuilder
+                .Entity<RetencionHipoSolicitudSpResult>()
+                .HasNoKey(); 
+        }
         public DbSet<OFI_Producto> OFI_Producto { get; set; }
         public DbSet<OFI_VentaDigital> OFI_VentaDigital { get; set; }
         public DbSet<OFI_RetencionHipoCliente> OFI_RetencionHipoCliente { get; set; }
         public DbSet<OFI_RetencionHipoClienteLog> OFI_RetencionHipoClienteLog { get; set; }
-      //  public DbSet<RetencionHipotecariaSolicitudDTO> RetencionHipoSolicitudes { get; set; }
+       public DbSet<OFI_RetencionHipoSolicitud> OFI_RetencionHipoSolicitud { get; set; }
+       public DbSet<OFI_RetencionHipoProductos> OFI_RetencionHipoProductos { get; set; }
+       public DbSet<OFI_RetencionHipoEntidad> OFI_RetencionHipoEntidad { get; set; }
+        
     }
     
 }
