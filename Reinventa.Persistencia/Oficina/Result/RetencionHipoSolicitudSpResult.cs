@@ -1,12 +1,14 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Reinventa.Aplicacion.Oficina.RetencionHipotecaria.ListarRetencionHipotecaria
+namespace Reinventa.Persistencia.Oficina.Result
 {
-    public class RetencionHipotecariaSolicitudDTO
+    [Keyless] // 👈 MUY IMPORTANTE
+    public class RetencionHipoSolicitudSpResult
     {
         public int ID { get; set; }
         public string? PRODUCTO { get; set; }
@@ -17,6 +19,8 @@ namespace Reinventa.Aplicacion.Oficina.RetencionHipotecaria.ListarRetencionHipot
         public decimal? TASA_OFRECIDA { get; set; }
         public string? ENTIDAD { get; set; }
         public string? ID_USUARIO { get; set; }
+        public string? ID_GERENTE { get; set; }
+        public string? DNI_GERENTE { get; set; }
         public int? ESTADO { get; set; }
         public DateTime? FECHA_REGISTRO { get; set; }
         public decimal? TASA_RESPUESTA { get; set; }
