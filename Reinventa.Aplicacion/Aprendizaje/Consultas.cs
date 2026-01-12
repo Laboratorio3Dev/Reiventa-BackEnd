@@ -153,7 +153,7 @@ namespace Reinventa.Aplicacion.Aprendizaje
 
                     if(request.Anio==null)
                     {
-                        request.Anio = 2025;
+                        request.Anio = 0;
                     }
                     if (request.Mes == null)
                     {
