@@ -64,13 +64,24 @@ namespace ReinventaLab.Api.Controllers.NPS
             var result = await _mediator.Send(new Consultas.ExportarRespuestasEncuesta.Query { Id = idEncuesta }, ct);
             return Ok(result);
         }
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult<Unit>> Editar(int id, Transacciones.Pregunta_Modificar.Ejecuta data)
-        //{
-        //    data.IdPregunta = id;
-        //    return await _mediator.Send(data);
-        // }
+        [HttpDelete("EliminarEncuesta/{id}")]
+        public async Task<ActionResult<EncuestaDto>> GetEncuestaEncriptada(int id)
+        {
+            var command = new Transacciones.EliminarEncuesta.Ejecuta
+            {
+                IdEncuesta = id,
+                Usuario = User.Identity?.Name ?? "SISTEMA"
+            };
 
+            var result = await _mediator.Send(command);
+
+            if (!result.IsSuccess)
+            {
+                return BadRequest(result);
+            }
+
+            return Ok(result);
+        }
 
         //Permite cargar la encuesta mediante la URL encriptada de la misma
         [AllowAnonymous]
