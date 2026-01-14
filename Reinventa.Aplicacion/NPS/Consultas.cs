@@ -31,7 +31,7 @@ namespace Reinventa.Aplicacion.NPS
                 {
                     var hoy = DateTime.Now;
 
-                    var data = await _context.NPS_Encuesta
+                    var data = await _context.NPS_Encuesta.Where(e=>e.Estado==1)
                         .Select(e => new EncuestaDto
                         {
                             IdEncuesta = e.IdEncuesta,
@@ -145,7 +145,7 @@ namespace Reinventa.Aplicacion.NPS
                     var hoy = DateTime.Now;
 
                     var encuesta = await _context.NPS_Encuesta
-                        .Where(e => e.IdEncuesta == request.Id) 
+                        .Where(e => e.IdEncuesta == request.Id && e.Estado==1) 
                         .Select(e => new EncuestaDto
                         {
                             IdEncuesta = e.IdEncuesta,
@@ -252,7 +252,7 @@ namespace Reinventa.Aplicacion.NPS
                         .Where(e =>
                                 e.IdEncuesta == idEncuesta &&
                                 (e.FechaInicio == null || e.FechaInicio <= hoy) &&
-                                (e.FechaFin == null || e.FechaFin >= hoy)
+                                (e.FechaFin == null || e.FechaFin >= hoy) && e.Estado == 1
                                )
                         .Select(e => new EncuestaDto
                         {

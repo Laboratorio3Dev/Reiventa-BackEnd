@@ -148,7 +148,8 @@ namespace Reinventa.Aplicacion.NPS
                         NombreEncuesta = request.DatosEncuesta.NombreEncuesta,
                         TipoPersona= request.DatosEncuesta.TipoPersona,
                         UsuarioCreacion= request.Usuario,     
-                        TituloEncuesta= request.DatosEncuesta.TituloEncuesta
+                        TituloEncuesta= request.DatosEncuesta.TituloEncuesta,
+                        Estado=1
                     };
 
                     // 2. Agregar al contexto
@@ -253,7 +254,7 @@ namespace Reinventa.Aplicacion.NPS
 
                 public async Task<ResponseTransacciones> Handle(Ejecuta request, CancellationToken cancellationToken)
                 {                
-                    var registro = await _context.NPS_Encuesta.Where(x => x.IdEncuesta == request.DatosEncuesta.IdEncuesta).FirstAsync();
+                    var registro = await _context.NPS_Encuesta.Where(x => x.IdEncuesta == request.DatosEncuesta.IdEncuesta).FirstOrDefaultAsync();
                     if (registro == null)
                     {
                         throw new ManejadorExcepcion(HttpStatusCode.NotFound, new { Error = "El registro no existe, valide" });
@@ -271,7 +272,7 @@ namespace Reinventa.Aplicacion.NPS
 
                     foreach (var ElimimarPregunta in request.preguntasEliminadas)
                     {
-                        var registroPreg = await _context.NPS_EncuestaPregunta.Where(x => x.IdEncuestaPregunta == ElimimarPregunta.IdPregunta).FirstAsync();
+                        var registroPreg = await _context.NPS_EncuestaPregunta.Where(x => x.IdEncuestaPregunta == ElimimarPregunta.IdPregunta).FirstOrDefaultAsync();
                         if (registroPreg == null)
                         {
                             throw new ManejadorExcepcion(HttpStatusCode.NotFound, new { Error = "El registro no existe, valide" });
@@ -314,7 +315,7 @@ namespace Reinventa.Aplicacion.NPS
                         }
                         else
                         {
-                            var registroPreg = await _context.NPS_EncuestaPregunta.Where(x => x.IdEncuestaPregunta == pregunta.IdEncuestaPregunta).FirstAsync();
+                            var registroPreg = await _context.NPS_EncuestaPregunta.Where(x => x.IdEncuestaPregunta == pregunta.IdEncuestaPregunta).FirstOrDefaultAsync();
                             if (registroPreg == null)
                             {
                                 throw new ManejadorExcepcion(HttpStatusCode.NotFound, new { Error = "El registro no existe, valide" });
@@ -377,6 +378,82 @@ namespace Reinventa.Aplicacion.NPS
                             IsSuccess = true,
                             IdValue = 1
                         };
+                }
+            }
+        }
+        public class EliminarEncuesta
+        {
+            public class Ejecuta : IRequest<ResponseTransacciones>
+            {
+                public int IdEncuesta { get; set; }
+                public string Usuario { get; set; } = string.Empty;
+
+            }
+
+            public class EjecutaValidacion : AbstractValidator<Ejecuta>
+            {
+                public EjecutaValidacion()
+                {
+                    RuleFor(x => x.IdEncuesta).GreaterThan(0);
+                    RuleFor(x => x.Usuario).NotEmpty();
+                }
+            }
+
+            public class Manejador : IRequestHandler<Ejecuta, ResponseTransacciones>
+            {
+                private readonly NPS_Context _context;
+                public Manejador(NPS_Context context) => _context = context;
+
+                public async Task<ResponseTransacciones> Handle(Ejecuta request, CancellationToken cancellationToken)
+                {
+                    var encuesta = await _context.NPS_Encuesta
+                        .FirstOrDefaultAsync(x => x.IdEncuesta == request.IdEncuesta, cancellationToken);
+
+                    if (encuesta == null)
+                    {
+                        throw new ManejadorExcepcion(HttpStatusCode.NotFound,
+                            new { Error = "La encuesta no existe, valide" });
+                    }
+
+                    if (encuesta.Estado == 0)
+                    {
+                        return new ResponseTransacciones
+                        {
+                            Message = "La encuesta ya se encuentra eliminada",
+                            IsSuccess = true,
+                            IdValue = request.IdEncuesta
+                        };
+                    }
+
+                    await using var tx = await _context.Database.BeginTransactionAsync(cancellationToken);
+                    try
+                    {
+                        encuesta.Estado = 0;
+                        var retorno = await _context.SaveChangesAsync(cancellationToken);
+                        await tx.CommitAsync(cancellationToken);
+
+                        if (retorno == 0)
+                        {
+                            return new ResponseTransacciones
+                            {
+                                Message = "Solicitud Incorrecta",
+                                IsSuccess = false,
+                                IdValue = 0
+                            };
+                        }
+
+                        return new ResponseTransacciones
+                        {
+                            Message = "Solicitud Correcta",
+                            IsSuccess = true,
+                            IdValue = request.IdEncuesta
+                        };
+                    }
+                    catch
+                    {
+                        await tx.RollbackAsync(cancellationToken);
+                        throw;
+                    }
                 }
             }
         }
@@ -487,7 +564,7 @@ namespace Reinventa.Aplicacion.NPS
 
                         // Se modifica el FlagContesta a 1 para registrar que el cliente guardó sus respuestas
                         var entityCliente = await _context.NPS_ClienteEncuesta
-                            .FirstAsync(x => x.IdCliente == cliente.IdCliente, cancellationToken);
+                            .FirstOrDefaultAsync(x => x.IdCliente == cliente.IdCliente, cancellationToken);
 
                         entityCliente.FlagContesta = 1;
                         entityCliente.FechaCreacion = hoy; // si existe
