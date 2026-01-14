@@ -4,6 +4,7 @@ using Reinventa.Dominio.Oficina;
 using Reinventa.Infraestructura.Auth;
 using Reinventa.Infraestructura.Email;
 using Reinventa.Persistencia.NPS;
+using Reinventa.Persistencia.Oficina;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,12 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
     public class RegistrarVentaDigitalHandler
      : IRequestHandler<RegistrarVentaDigitalCommand, ResponseTransacciones>
     {
-        private readonly NPS_Context _context;
+        private readonly OFI_Context _context;
         private readonly ITokenService _tokenService;
         private readonly ICorreoService _correoService;
 
         public RegistrarVentaDigitalHandler(
-            NPS_Context context,
+            OFI_Context context,
              ITokenService tokenService,
               ICorreoService correoService
            )
@@ -53,7 +54,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                 var registro = new OFI_VentaDigital
                 {
                     CorreoCliente = req.CorreoCliente,
-                    FechaRegistro = DateTime.Now,
+                    FechaRegistro = DateTime.Now.AddHours(-5),
                     UsuarioRegistro = req.UsuarioRegistro,
                     ProductoSeleccionado = producto.IdProducto,
                     OfertaEnviada = false,
@@ -80,7 +81,7 @@ namespace Reinventa.Aplicacion.Oficina.VentaDigital.RegistrarVentaDigital
                             {
                                 enderecoCorreo = "BancaDigital@banbif.com.pe"
                             },
-                            asunto = producto.Asunto,
+                            asunto = producto.Asunto.Replace("{Nombre}", registro.NombreCliente),
                             contenido = producto.FormatoCorreo,
                           
                             destinatario = new[]

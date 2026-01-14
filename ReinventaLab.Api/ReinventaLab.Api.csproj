@@ -21,4 +21,8 @@
     <ProjectReference Include="..\Reinventa.Seguridad\Reinventa.Seguridad.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Logs\" />
+  </ItemGroup>
+
 </Project>
