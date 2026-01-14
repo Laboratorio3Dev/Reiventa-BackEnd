@@ -68,12 +68,12 @@ namespace Reinventa.Aplicacion.Oficina.RetencionHipotecaria.CrearRetencionHipote
                 return new ResponseTransacciones
                 {
                     IsSuccess = false,
-                    Message = "No se pudo registrar la solicitud"
+                    Message = "El cliente no cuenta con una campaña de retención, seguir el flujo regular a través del Buzón de Retención Hipotecaria, adjuntando los sustentos correspondientes"
                 };
             }
 
-            var data = resultado.First();
-
+            var data = resultado.FirstOrDefault();
+            
             // 4️⃣ Enviar correo (NO rompe la transacción)
            // await EnviarCorreoRespuestaAsync(token, data);
 
