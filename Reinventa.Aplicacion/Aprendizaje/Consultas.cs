@@ -129,6 +129,63 @@ namespace Reinventa.Aplicacion.Aprendizaje
                 }
             }
         }
+
+        public class PlanesAccionId
+        {
+            public class ListadosPlanesAccion : IRequest<List<PlanAccionDTO>>
+            {
+                public string? Usuario { get; set; }
+                public int IdPlanAccion { get; set; }
+            }
+
+            public class Manejador : IRequestHandler<ListadosPlanesAccion, List<PlanAccionDTO>>
+            {
+                private readonly SA_Context _context;
+
+                public Manejador(SA_Context context)
+                {
+                    _context = context;
+                }
+
+                public async Task<List<PlanAccionDTO>> Handle(ListadosPlanesAccion request, CancellationToken cancellationToken)
+                {
+                    // Seguridad básica: si viene null lo pasamos como empty
+                    var usuario = request.Usuario ?? string.Empty;
+
+                    var planes = await _context.PlanAcciones
+                        .FromSqlRaw("EXEC USP_SA_LISTAR_PLANES_ACCION @USUARIO = {0}", usuario)
+                        .ToListAsync(cancellationToken);
+
+                    if (planes == null || planes.Count == 0)
+                        return new List<PlanAccionDTO>();
+
+                    return planes.Where(x=> x.ID_PLANACCION== request.IdPlanAccion).Select(e => new PlanAccionDTO
+                    {
+                        ID_PLANACCION = e.ID_PLANACCION,
+                        PRODUCTO = e.PRODUCTO,
+                        DIMENSION = e.DIMENSION,
+                        ESTADO = e.ESTADO,
+                        FECHA = e.FECHA,
+                        TAREA = e.TAREA,
+                        USUARIO = e.USUARIO,
+                        Comentario = e.ComentarioEvidencia,
+                        GerenteOficina = e.GerenteOficina,
+                        Oficina = e.Oficina,
+                        Zona = e.Zona,
+                        Evidencia = e.Evidencia == null
+                        ? null
+                        : new EvidenciaDTO
+                        {
+                            Archivo = e.Evidencia,
+                            ContentType = FileHelper.DetectContentType(e.Evidencia),
+                            Nombre = $"Evidencia_Plan_{e.ID_PLANACCION}" +
+                                     FileHelper.GetExtension(
+                                         FileHelper.DetectContentType(e.Evidencia))
+                        }
+                    }).ToList();
+                }
+            }
+        }
         public class Dashboard
         {
             public class ListadosDashboard : IRequest<List<ListadoDashboard_DTO>>
@@ -268,11 +325,11 @@ namespace Reinventa.Aplicacion.Aprendizaje
                     // Seguridad básica: si viene null lo pasamos como empty
                     if (request.Anio == null)
                     {
-                        request.Anio = 2025;
+                        request.Anio = 0;
                     }
                     if (request.Mes == null)
                     {
-                        request.Mes = 12;
+                        request.Mes = 0;
                     }
 
                     var parametros = new[]

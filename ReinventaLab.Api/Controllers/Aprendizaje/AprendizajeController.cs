@@ -37,6 +37,12 @@ namespace ReinventaLab.Api.Controllers.Aprendizaje
             return await _mediator.Send(data);
         }
 
+        [HttpPost("PlanesAccionId")]
+        public async Task<ActionResult<List<PlanAccionDTO>>> PlanesAccionId(Consultas.PlanesAccionId.ListadosPlanesAccion data)
+        {
+            return await _mediator.Send(data);
+        }
+
         [HttpPost("Tareas")]
         public async Task<ActionResult<List<TareasDTO>>> Tareas(Consultas.ListaTareas.ListadoTareas data)
         {

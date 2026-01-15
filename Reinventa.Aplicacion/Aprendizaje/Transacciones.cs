@@ -336,6 +336,26 @@ namespace Reinventa.Aplicacion.Aprendizaje
                 {
                     if (request.sA_DASHBOARD_COMENTARIOs.Count > 0)
                     {
+
+                        var parametros = new[]
+                           {
+                                new SqlParameter("@ANIO", SqlDbType.Int)
+                                {
+                                    Value = request.sA_DASHBOARDs[0].ANIO
+                                },
+                                new SqlParameter("@MES", SqlDbType.Int)
+                                {
+                                    Value = request.sA_DASHBOARDs[0].MES
+                                }
+                            };
+
+
+                        await _context.Database.ExecuteSqlRawAsync(
+                                "EXEC USP_ELIMINAR_DASHBOARD @ANIO, @MES",
+                                parametros,
+                                cancellationToken
+                        );
+
                         _context.SA_DASHBOARD_COMENTARIO.AddRange(request.sA_DASHBOARD_COMENTARIOs.Select(dato =>
                          new SA_DASHBOARD_COMENTARIO
                          {

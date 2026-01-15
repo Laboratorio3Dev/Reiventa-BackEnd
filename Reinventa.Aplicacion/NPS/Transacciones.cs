@@ -539,7 +539,7 @@ namespace Reinventa.Aplicacion.NPS
                             Fecha = hoy,
 
                             NroDocumentoCliente = cliente.NroDocumento,
-
+                            IP_REGISTRO= req.IP_REGISTRO,
                             CodigoLogAsociado = req.UsuarioToken,
 
                             LinkInicio = req.EncuestaToken

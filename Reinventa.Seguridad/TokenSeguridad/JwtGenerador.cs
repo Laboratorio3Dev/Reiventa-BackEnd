@@ -25,7 +25,7 @@ namespace Reinventa.Seguridad.TokenSeguridad
             {
                 Subject = new ClaimsIdentity(claims),
                 NotBefore= DateTime.Now,
-                Expires = DateTime.Now.AddMinutes(10),
+                Expires = DateTime.Now.AddMinutes(22),
                 SigningCredentials= credenciales,
             };
                       

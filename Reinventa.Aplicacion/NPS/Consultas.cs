@@ -622,7 +622,8 @@ namespace Reinventa.Aplicacion.NPS
                             r.NroDocumentoCliente,
                             r.CodigoLogAsociado,
                             r.Fecha,
-                            r.LinkInicio
+                            r.LinkInicio,
+                            r.IP_REGISTRO
                         })
                         .ToListAsync(cancellationToken);
 
@@ -701,6 +702,7 @@ namespace Reinventa.Aplicacion.NPS
                             ["Documento"] = r.NroDocumentoCliente,
                             ["Area"] = encuesta.NombreEncuesta,
                             ["Fecha"] = r.Fecha?.ToString("dd/MM/yyyy HH:mm"),
+                            ["IP"] = r.IP_REGISTRO,
                             ["LinkInicio"] = r.LinkInicio
                         };
 

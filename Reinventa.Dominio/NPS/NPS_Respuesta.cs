@@ -17,6 +17,7 @@ namespace Reinventa.Dominio.NPS
         public DateTime? Fecha { get; set; }
         public string? CodigoLogAsociado { get; set; }
         public string? LinkInicio { get; set; }
+        public string? IP_REGISTRO { get; set; }
 
         [ForeignKey(nameof(IdEncuesta))]
         public NPS_Encuesta? Encuesta { get; set; }
